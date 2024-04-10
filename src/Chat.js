@@ -2,13 +2,12 @@ import {over} from 'stompjs';
 import SockJS from 'sockjs-client';
 import React, {useState} from "react";
 import {allExpanded, defaultStyles, JsonView} from "react-json-view-lite";
-import axios from "axios";
 
 let stompClient = null;
 
 function App() {
-    const [user, setUser] = useState({
-        username: '',
+    const [chat, setChat] = useState({
+        chatId: '',
         connected: false,
     });
     const [messages, setMessages] = useState([]);
@@ -19,9 +18,8 @@ function App() {
     }
 
     const onConnected = () => {
-        setUser({...user, connected: true});
-        stompClient.subscribe('/user/' + user.username + '/private', onPrivateMessageReceived);
-        // stompClient.subscribe('/chatroom/660a9faec04d0532fa8d34ab', onPrivateMessageReceived);
+        setChat({...chat, connected: true});
+        stompClient.subscribe('/chatroom/' + chat.chatId, onPrivateMessageReceived);
         // const data = {
         //     sender: "6602209387c1ef000f268f77",
         //     content: "Hello",
@@ -34,7 +32,7 @@ function App() {
         //
         //     ]
         // }
-        // stompClient.send("/app/chat/660a9faec04d0532fa8d34ab", {}, JSON.stringify(data));
+        // stompClient.send("/app/chat/660ab974f65446249dcc8e83", {}, JSON.stringify(data));
 
         // const data = {
         //     senderId: "6602209387c1ef000f268f77",
@@ -51,13 +49,13 @@ function App() {
     return (
         <div className="container my-3">
             {
-                user.connected ?
+                chat.connected ?
                     (
                         <div>
-                            <h4>Bạn đang nhận thông báo từ User ID: {user.username}</h4>
+                            <h4>Bạn đang nhận thông báo từ chat ID: {chat.chatId}</h4>
                             {
                                 messages.map((message, index) => (
-                                    <div className="p-2" key={index}>
+                                    <div key={message.messageId} className="p-2">
                                         <JsonView data={message} shouldExpandNode={allExpanded} style={defaultStyles}/>
                                     </div>
                                 ))
@@ -69,10 +67,10 @@ function App() {
                             <div className="w-100 border border-1 border-dark p-4 rounded-3">
                                 <div className="row">
                                     <div className="col-10">
-                                        <label className="form-label">Nhập ID người dùng bạn muốn nhận thông báo</label>
+                                        <label className="form-label">Nhập ID phòng chat</label>
                                         <input type="text" name="username" className="form-control"
-                                               value={user.username}
-                                               onChange={(event) => setUser({...user, username: event.target.value})}/>
+                                               value={chat.chatId}
+                                               onChange={(event) => setChat({...chat, token: event.target.value})}/>
                                     </div>
                                     <div className="col-2 d-flex align-items-end">
                                         <button type="button" className="btn btn-primary w-100"
